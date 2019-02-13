@@ -20,10 +20,10 @@ router.get('/', function(req, res, next) {
             // This function (`page`) will get called for each page of records.
         
             records.forEach(function(record) {
-                // console.log('Retrieved', record.get('Name'));
 
                 let record_object = {
                   title: record.get('Name'),
+                  recent_activity: record.get('Recent Activity')
                 }
 
                 records_array.push(record_object);
@@ -58,12 +58,24 @@ router.get('/', function(req, res, next) {
     })
   }
 
+  // Create a record
+  function createRecord(record) {
+    Record.create({
+      title: record.title,
+      recent_activity: record.recent_activity,
+    }, (err, record) => {
+      console.log('saving new record: ' + record.title)
+    })
+  }
+
   // Update a record in the database
-  function updateRecord(record_id, record_recent_activity) {
+  function updateRecord(record) {
+    console.log('about to upate: ' + record.title)
+
     return new Promise((resolve, reject) => {
 
-      Record.findOneAndUpdate(record_id, {
-        recent_activity: record_recent_activity
+      Record.findOneAndUpdate(record._id, {
+        recent_activity: record.recent_activity
       }, {
         new: true
       }, (err, updatedRecord) => {
@@ -90,24 +102,22 @@ router.get('/', function(req, res, next) {
   // Run through records for airtable and db and compare records
   async function compareRecords(airtable_records, db_record_titles, db_record_activity) {
 
-    let airtable_records_array = airtable_records;
+    let airtable_records_array = airtable_records;  
     let db_record_titles_array = db_record_titles;
     let db_record_activity_array = db_record_activity;
 
-    airtable_records_array.forEach(record => {
+    for (let record of airtable_records_array) {
       
-      if(db_records_titles_array.indexOf(record.title) > -1) {
+      if(db_record_titles_array.indexOf(record.title) > -1) {
         if(db_record_activity_array.indexOf(record.recent_activity) > -1) {
           console.log('no change in recent activity for: ' + record.title)
         } else {
-          console.log('updating the record ' + record.title + ' with the recent activity: ' + record.recent_activity);
-
-          // await updateRecord(record._id, record.recent_activity)
+          await updateRecord(record)
         }
       } else {
-        console.log('saving new record');
+        createRecord(record);
       }
-    });
+    };
   }
 
   async function getRecordUpdates() {
@@ -118,7 +128,7 @@ router.get('/', function(req, res, next) {
       return record.title
     })
   
-    db_records_titles = db_records.map(record => {
+    db_record_titles = db_records.map(record => {
       return record.title
     })
 
@@ -129,15 +139,13 @@ router.get('/', function(req, res, next) {
     //remove records that are not in the airtable data
     deleteNonRecords();
 
-
+    //compare records
+    compareRecords(airtable_records, db_record_titles, db_record_activity);
     
     return db_records;
   }
 
   getRecordUpdates().then((recordsRetrieved) => {
-    recordsRetrieved.forEach((record) => {
-      console.log(record);
-    })
     res.render('index');
   })
 })
