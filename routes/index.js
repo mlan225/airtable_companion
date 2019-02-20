@@ -70,7 +70,6 @@ router.get('/', function(req, res, next) {
 
   // Update a record in the database
   function updateRecord(record) {
-    console.log('about to upate: ' + record.title)
 
     return new Promise((resolve, reject) => {
 
@@ -80,7 +79,7 @@ router.get('/', function(req, res, next) {
         new: true
       }, (err, updatedRecord) => {
         if(err) {reject(err)}
-        console.log('updating recent activity for: ' + updatedRecord.title)
+        console.log('updating recent activity for: ' + record.title)
         resolve();
       })  
     })
