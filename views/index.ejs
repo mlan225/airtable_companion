@@ -3,8 +3,14 @@
   <head>
   </head>
   <body>
-    <h1>Updated Records</h1>
+    <h1><%= title %></h1>
     <hr>
-   
+    <ul>
+      <% records.forEach(function(record) { %>
+      <li>
+        <h3><%= record.title %><% if(record.is_new) { %> <i style="color: red">New!</i> <% } %></li></h3>
+        <p><%= record.recent_activity %></p>
+      <% }) %>
+    </ul>
   </body>
 </html>

@@ -8,7 +8,7 @@ var indexRouter = require('./routes/index');
 
 var mongoose = require('mongoose');
 mongoose.set('useFindAndModify', false);
-mongoose.Promise = global.Promise;
+
 mongoose.connect('mongodb://localhost/records', { useNewUrlParser: true })
 .then(() => console.log('Connection Successful'))
 .catch((err) => console.error(err));

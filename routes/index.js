@@ -55,6 +55,7 @@ router.get('/', function(req, res, next) {
           records_array.push(record)
         });
       });
+
       console.log('Getting records')
         setTimeout(() => {
           resolve(records_array);
@@ -68,33 +69,28 @@ router.get('/', function(req, res, next) {
       Record.create({
         title: record.title,
         recent_activity: record.recent_activity,
+        is_new: true
       }, (err, record) => {
-        if(err) {reject(err)}
-        console.log('saving new record: ' + record.title)
-        setTimeout(() => {
-          resolve()
-        }, 3000);
+        if(err) {reject(err)} 
+        console.log('saving new record: ' + record.title)    
+        resolve()
       })
     })    
   }
 
   // Update a record in the database
-  function updateRecord(record) {
+  function updateRecord(record, isNewBool) {
 
     return new Promise((resolve, reject) => {
-      console.log('Updating record: ' + record.title)
-
       Record.findOneAndUpdate({title: record.title}, {
-        recent_activity: record.recent_activity
+        recent_activity: record.recent_activity,
+        is_new: isNewBool
       }, {
         new: true
       }, (err, updatedRecord) => {
         if(err) {reject(err)}
-        console.log('updated recent activity for: ' + updatedRecord.title)
-        console.log('updating record: ' + updatedRecord.title)
-        setTimeout(() => {
-          resolve()
-        }, 3000);
+        console.log('updated record: ' + updatedRecord.title)
+        resolve()
       })  
     })
   }
@@ -109,9 +105,6 @@ router.get('/', function(req, res, next) {
           Record.findByIdAndDelete({"_id": record._id}, (err, deletedRecord) => {
             if(err) {reject(err)}
             console.log('deleting record: ' + deletedRecord);
-            setTimeout(() => {
-              resolve()
-            }, 3000);
           })
         }
       }) 
@@ -130,9 +123,9 @@ router.get('/', function(req, res, next) {
         
         if(db_record_titles_array.indexOf(record.title) > -1) {
           if(db_record_activity_array.indexOf(record.recent_activity) > -1) {
-            console.log('no change in recent activity for: ' + record.title)
+            await updateRecord(record, false)
           } else {
-            await updateRecord(record)
+            await updateRecord(record, true)
           }
         } else {
           await createRecord(record);
@@ -163,12 +156,12 @@ router.get('/', function(req, res, next) {
     //compare records
     await compareRecords(airtable_records, db_record_titles, db_record_activity);
     
-    return db_records;
+    return await getDbRecords();
   }
 
   getRecordUpdates().then((recordsRetrieved) => {
-    console.log('about to render the index file')
-    res.render('index');
+    console.log(recordsRetrieved)
+    res.render('index', {title: 'Updated Records', records: recordsRetrieved});
   })
 })
 
