@@ -1,0 +1,93 @@
+<%- include partials/header.ejs %>
+
+<div class="board-container">
+
+	<header class="masthead">
+
+		<div class="boards-menu">
+
+			<button class="boards-btn btn"><i class="fab fa-trello boards-btn-icon"></i>Boards</button>
+
+			<div class="board-search">
+				<input type="search" class="board-search-input" aria-label="Board Search">
+				<i class="fas fa-search search-icon" aria-hidden="true"></i>
+			</div>
+
+		</div>
+
+		<div class="logo">
+
+			<h1><i class="fab fa-trello logo-icon" aria-hidden="true"></i>Airtable Companion</h1>
+
+		</div>
+
+		<div class="user-settings">
+
+			<button class="user-settings-btn btn" aria-label="Create">
+				<i class="fas fa-plus" aria-hidden="true"></i>
+			</button>
+
+			<button class="user-settings-btn btn" aria-label="Information">
+				<i class="fas fa-info-circle" aria-hidden="true"></i>
+			</button>
+
+			<button class="user-settings-btn btn" aria-label="Notifications">
+				<i class="fas fa-bell" aria-hidden="true"></i>
+			</button>
+
+			<button class="user-settings-btn btn" aria-label="User Settings">
+				<i class="fas fa-user-circle" aria-hidden="true"></i>
+			</button>
+
+		</div>
+
+	</header>
+	<!-- End of masthead -->
+
+
+	<!-- Board info bar -->
+	<section class="board-info-bar">
+
+		<div class="board-controls">
+
+			<button class="board-title btn">
+				<h2>Team Tango</h2>
+			</button>
+
+			<button class="star-btn btn" aria-label="Star Board">
+				<i class="far fa-star" aria-hidden="true"></i>
+			</button>
+
+			<button class="personal-btn btn">All Records</button>
+
+			<button class="private-btn btn"><i class="fas fa-briefcase private-btn-icon" aria-hidden="true"></i>Favorite Records</button>
+
+		</div>
+
+		<button class="menu-btn btn"><i class="fas fa-ellipsis-h menu-btn-icon" aria-hidden="true"></i>Show Menu</button>
+
+	</section>
+	<!-- End of board info bar -->
+
+	<!-- Lists container -->
+	<section class="lists-container">
+
+		<div class="list">
+
+			<h3 class="list-title">April 29th - May 8th</h3>
+
+			<ul class="list-items">
+				<% records.forEach((record) => { %>
+					<li>
+						<h3><%= record.title %></h3>
+						<p><%= record.recent_activity %></p>
+					</li>
+				<% }) %>
+			</ul>
+		</div>
+	</section>
+
+</div>
+
+<!-- End of lists container -->
+<%- include partials/header.ejs %>
